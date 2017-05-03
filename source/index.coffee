@@ -155,10 +155,13 @@ class MongoStorage
   getFileById: (id, callback) ->
     @__getFile _id: id, callback
 
-  __download: (file, res, callback = (-> return)) ->
+  getFileReadStreamById: (id) ->
     gfs = Grid @db, mongodb
-    read = gfs.createReadStream
-      _id: file._id
+    gfs.createReadStream
+      _id: id
+
+  __download: (file, res, callback = (-> return)) ->
+    read = @getFileReadStreamById file._id
     res.set 'Content-Disposition', "attachment; filename=\"#{file.filename}\""
     res.set 'Content-Type', file.metadata.mimetype
     res.set 'Content-Length', file.length
